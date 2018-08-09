@@ -22,4 +22,5 @@ type Order struct {
 	Price         big.Decimal
 	Amount        big.Decimal
 	ExecutionTime time.Time
+	Reason        string // What caused the buy/sell
 }
