@@ -15,6 +15,8 @@ type Candle struct {
 	MaxPrice   big.Decimal `json:",string"`
 	MinPrice   big.Decimal `json:",string"`
 	Volume     big.Decimal `json:",string"`
+	BuyVolume  big.Decimal `json:",string"`
+	SellVolume big.Decimal `json:",string"`
 	TradeCount uint
 }
 
@@ -27,12 +29,14 @@ func NewCandle(period TimePeriod) (c *Candle) {
 		MaxPrice:   big.ZERO,
 		MinPrice:   big.ZERO,
 		Volume:     big.ZERO,
+		BuyVolume:  big.ZERO,
+		SellVolume: big.ZERO,
 	}
 }
 
 // AddTrade adds a trade to this candle. It will determine if the current price is higher or lower than the min or max
 // price and increment the tradecount.
-func (c *Candle) AddTrade(tradeAmount, tradePrice big.Decimal) {
+func (c *Candle) AddTrade(tradeAmount, tradePrice big.Decimal, side OrderSide) {
 	if c.OpenPrice.Zero() {
 		c.OpenPrice = tradePrice
 	}
@@ -54,6 +58,21 @@ func (c *Candle) AddTrade(tradeAmount, tradePrice big.Decimal) {
 		c.Volume = tradeAmount
 	} else {
 		c.Volume = c.Volume.Add(tradeAmount)
+	}
+
+	switch {
+	case side == BUY:
+		if c.BuyVolume.Zero() {
+			c.BuyVolume = tradeAmount
+		} else {
+			c.BuyVolume = c.BuyVolume.Add(tradeAmount)
+		}
+	case side == SELL:
+		if c.SellVolume.Zero() {
+			c.SellVolume = tradeAmount
+		} else {
+			c.SellVolume = c.SellVolume.Add(tradeAmount)
+		}
 	}
 
 	c.TradeCount++

@@ -18,11 +18,11 @@ func TestCandle_AddTrade(t *testing.T) {
 		End:   now.Add(time.Minute),
 	})
 
-	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(2)) // Open
-	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(5)) // High
-	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(1)) // Low
-	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(3)) // No Diff
-	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(3)) // Close
+	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(2), BUY) // Open
+	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(5), BUY) // High
+	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(1), BUY) // Low
+	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(3), BUY) // No Diff
+	candle.AddTrade(big.NewDecimal(1), big.NewDecimal(3), BUY) // Close
 
 	assert.EqualValues(t, 2, candle.OpenPrice.Float())
 	assert.EqualValues(t, 5, candle.MaxPrice.Float())
