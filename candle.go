@@ -78,6 +78,30 @@ func (c *Candle) AddTrade(tradeAmount, tradePrice big.Decimal, side OrderSide) {
 	c.TradeCount++
 }
 
+// Strong assumption that the "n" candle is new and AFTER the start of the first
+func (c *Candle) AddCandle(n *Candle) {
+	if n.Period.Start.Before(c.Period.Start) {
+		return // do nothing
+	}
+
+	if n.MaxPrice.GT(c.MaxPrice) {
+		c.MaxPrice = n.MaxPrice.Frac(1.0)
+	}
+
+	if n.MinPrice.LT(c.MinPrice) {
+		c.MinPrice = n.MinPrice.Frac(1.0)
+	}
+
+	c.Volume.Add(n.Volume)
+	c.BuyVolume.Add(n.BuyVolume)
+	c.SellVolume.Add(n.SellVolume)
+
+	c.ClosePrice = n.ClosePrice.Frac(1.0)
+	c.Period.End = n.Period.End
+
+	c.TradeCount += n.TradeCount
+}
+
 func (c *Candle) String() string {
 	return strings.TrimSpace(fmt.Sprintf(
 		`
@@ -89,10 +113,10 @@ Low:	%s
 Volume:	%s
 	`,
 		c.Period,
-		c.OpenPrice.FormattedString(2),
-		c.ClosePrice.FormattedString(2),
-		c.MaxPrice.FormattedString(2),
-		c.MinPrice.FormattedString(2),
-		c.Volume.FormattedString(2),
+		c.OpenPrice.FormattedString(7),
+		c.ClosePrice.FormattedString(7),
+		c.MaxPrice.FormattedString(7),
+		c.MinPrice.FormattedString(7),
+		c.Volume.FormattedString(7),
 	))
 }
